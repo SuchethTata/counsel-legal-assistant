@@ -1,7 +1,7 @@
 // Extracts text from an uploaded PDF/TXT in storage, chunks it, stores chunks in DB.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-// @ts-ignore - legacy build avoids canvas dep
-import * as pdfjs from "https://esm.sh/pdfjs-dist@4.0.379/legacy/build/pdf.mjs?target=denonext";
+// @ts-ignore - npm specifier, legacy build avoids canvas
+import * as pdfjs from "npm:pdfjs-dist@4.0.379/legacy/build/pdf.mjs";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
