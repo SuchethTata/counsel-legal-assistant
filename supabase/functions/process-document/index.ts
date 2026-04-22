@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
 
     if (isPdf) {
       // @ts-ignore
-      const pdf = await getDocument({ data: buf, disableWorker: true, isEvalSupported: false }).promise;
+      const pdf = await pdfjs.getDocument({ data: buf, disableWorker: true, isEvalSupported: false, useSystemFonts: false }).promise;
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
