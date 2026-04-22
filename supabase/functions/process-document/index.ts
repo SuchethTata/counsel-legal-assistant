@@ -1,12 +1,15 @@
 // Extracts text from an uploaded PDF/TXT in storage, chunks it, stores chunks in DB.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.95.0";
-import { corsHeaders } from "https://esm.sh/@supabase/supabase-js@2.95.0/cors";
-// @ts-ignore - unpkg ESM
-import { getDocument, GlobalWorkerOptions } from "https://esm.sh/pdfjs-dist@4.0.379/build/pdf.mjs";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+// @ts-ignore - npm specifier, legacy build avoids canvas
+import * as pdfjs from "npm:pdfjs-dist@4.0.379/legacy/build/pdf.mjs";
 
-// pdfjs in Deno: disable worker
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
 // @ts-ignore
-GlobalWorkerOptions.workerSrc = "";
+pdfjs.GlobalWorkerOptions.workerSrc = "";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -38,7 +41,7 @@ Deno.serve(async (req) => {
 
     if (isPdf) {
       // @ts-ignore
-      const pdf = await getDocument({ data: buf, disableWorker: true, isEvalSupported: false }).promise;
+      const pdf = await pdfjs.getDocument({ data: buf, disableWorker: true, isEvalSupported: false, useSystemFonts: false }).promise;
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
@@ -78,7 +81,6 @@ Deno.serve(async (req) => {
         page: c.page,
         content: c.content,
       }));
-      // batch insert
       for (let i = 0; i < rows.length; i += 100) {
         const slice = rows.slice(i, i + 100);
         const { error } = await supabase.from("document_chunks").insert(slice);
