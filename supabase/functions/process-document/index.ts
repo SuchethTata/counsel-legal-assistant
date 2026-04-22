@@ -1,16 +1,15 @@
 // Extracts text from an uploaded PDF/TXT in storage, chunks it, stores chunks in DB.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-// @ts-ignore - ESM
-import { getDocument, GlobalWorkerOptions } from "https://esm.sh/pdfjs-dist@4.0.379/build/pdf.mjs";
+// @ts-ignore - legacy build avoids canvas dep
+import * as pdfjs from "https://esm.sh/pdfjs-dist@4.0.379/legacy/build/pdf.mjs?target=denonext";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// pdfjs in Deno: disable worker
 // @ts-ignore
-GlobalWorkerOptions.workerSrc = "";
+pdfjs.GlobalWorkerOptions.workerSrc = "";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
