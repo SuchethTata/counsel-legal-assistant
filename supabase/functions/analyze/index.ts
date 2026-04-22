@@ -1,7 +1,11 @@
 // Single endpoint that handles: summary, risks, entities, qa
 // Body: { document_id, kind: 'summary'|'risks'|'entities'|'qa', question? }
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.95.0";
-import { corsHeaders } from "https://esm.sh/@supabase/supabase-js@2.95.0/cors";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-3-flash-preview";
