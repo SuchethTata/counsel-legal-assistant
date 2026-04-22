@@ -1,8 +1,12 @@
 // Extracts text from an uploaded PDF/TXT in storage, chunks it, stores chunks in DB.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.95.0";
-import { corsHeaders } from "https://esm.sh/@supabase/supabase-js@2.95.0/cors";
-// @ts-ignore - unpkg ESM
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+// @ts-ignore - ESM
 import { getDocument, GlobalWorkerOptions } from "https://esm.sh/pdfjs-dist@4.0.379/build/pdf.mjs";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 // pdfjs in Deno: disable worker
 // @ts-ignore
@@ -78,7 +82,6 @@ Deno.serve(async (req) => {
         page: c.page,
         content: c.content,
       }));
-      // batch insert
       for (let i = 0; i < rows.length; i += 100) {
         const slice = rows.slice(i, i + 100);
         const { error } = await supabase.from("document_chunks").insert(slice);
